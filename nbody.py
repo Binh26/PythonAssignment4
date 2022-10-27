@@ -10,15 +10,13 @@
 # slightly modified by bmmeijers
 
 import sys
-import csv
-import time
 from math import sqrt, pi as PI
 
 
 def combinations(l):
     result = []
     for x in range(len(l) - 1):
-        ls = l[x + 1 :]
+        ls = l[x + 1:]
         for y in ls:
             result.append((l[x][0], l[x][1], l[x][2], y[0], y[1], y[2]))
     return result
@@ -70,35 +68,26 @@ BODIES = {
 SYSTEM = tuple(BODIES.values())
 PAIRS = tuple(combinations(SYSTEM))
 
-def advance(dt, n, bodies=SYSTEM, pairs=PAIRS):
 
-    pos = {'sun': [], 'jupiter': [], 'saturn': [], 'uranus': [], 'neptune': []}
-    names = list(BODIES.keys())
-    for i in range(n):
-
-        for name, ([x, y, z], v, m) in enumerate(bodies):
-            pos[names[name]].append([x, y, z])
-
-        for ([x1, y1, z1], v1, m1, [x2, y2, z2], v2, m2) in pairs:
-            dx = x1 - x2
-            dy = y1 - y2
-            dz = z1 - z2
-            dist = sqrt(dx * dx + dy * dy + dz * dz)
-            mag = dt / (dist * dist * dist)
-            b1m = m1 * mag
-            b2m = m2 * mag
-            v1[0] -= dx * b2m
-            v1[1] -= dy * b2m
-            v1[2] -= dz * b2m
-            v2[2] += dz * b1m
-            v2[1] += dy * b1m
-            v2[0] += dx * b1m
-        for (r, [vx, vy, vz], m) in bodies:
-            r[0] += dt * vx
-            r[1] += dt * vy
-            r[2] += dt * vz
-    return pos
-
+def advance(dt, bodies=SYSTEM, pairs=PAIRS):
+    for ([x1, y1, z1], v1, m1, [x2, y2, z2], v2, m2) in pairs:
+        dx = x1 - x2
+        dy = y1 - y2
+        dz = z1 - z2
+        dist = sqrt(dx * dx + dy * dy + dz * dz)
+        mag = dt / (dist * dist * dist)
+        b1m = m1 * mag
+        b2m = m2 * mag
+        v1[0] -= dx * b2m
+        v1[1] -= dy * b2m
+        v1[2] -= dz * b2m
+        v2[2] += dz * b1m
+        v2[1] += dy * b1m
+        v2[0] += dx * b1m
+    for (r, [vx, vy, vz], m) in bodies:
+        r[0] += dt * vx
+        r[1] += dt * vy
+        r[2] += dt * vz
 
 
 def report_energy(bodies=SYSTEM, pairs=PAIRS, e=0.0):
@@ -123,35 +112,31 @@ def offset_momentum(ref, bodies=SYSTEM, px=0.0, py=0.0, pz=0.0):
     v[2] = pz / m
 
 
-def main(n, ref="sun"):
+def main(n, filename, out, ref="sun"):
     offset_momentum(BODIES[ref])
     report_energy()
-
-    t1 = time.time()
-    pos = advance(0.01, n)
-    print("uded time:{}".format(time.time() - t1))
-
-    from tqdm import tqdm
-    log_path = 'F:\Python\Test_Work\Assignment4\py{}.csv'.format(n)
-    file = open(log_path, 'w+', encoding='utf-8', newline='')
-    header = ['body', 'position x', 'position y', 'position z']
-    csv_writer = csv.writer(file)
-    csv_writer.writerow(header)
-    for key in list(pos.keys()):
-        for line in tqdm(pos[key]):
-            line.insert(0, key)
-            csv_writer.writerow(line)
-    file.close()
-    # report_energy()
+    if out == 1:
+        f = open(filename, 'a')
+        f.write('step;name of the body;position x;position y;position z\n')
+        name_list = list(BODIES.keys())
+        for i in range(n):
+            advance(0.01)
+            for j in range(5):
+                f.write('{};{};{:.9f};{:.9f};{:.9f}\n'.format(i, name_list[j], SYSTEM[j][0][0], SYSTEM[j][0][1],
+                                                              SYSTEM[j][0][2]))
+        f.close()
+    else:
+        for i in range(n):
+            advance(0.01)
+    report_energy()
 
 
 if __name__ == "__main__":
-    # sys.argv.append('20')
-    if len(sys.argv) >= 2:
-        main(int(sys.argv[1]))
+    if len(sys.argv) >= 4:
+        main(int(sys.argv[1]), str(sys.argv[2]), int(sys.argv[3]))
         sys.exit(0)
     else:
         print(f"This is {sys.argv[0]}")
-        print("Call this program with an integer as program argument")
-        print("(to set the number of iterations for the n-body simulation).")
+        print("Call this program with two arguments")
+        print("(an integer as the number of iterations for the n-body simulation and an string as output filename).")
         sys.exit(1)

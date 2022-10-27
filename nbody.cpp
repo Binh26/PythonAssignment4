@@ -1,12 +1,22 @@
-#include <ios>
-#include <string>
-#define _USE_MATH_DEFINES // https://docs.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=msvc-160
+/*
+   Taken from:
+   The Computer Language Benchmarks Game
+   https://salsa.debian.org/benchmarksgame-team/benchmarksgame/
+
+   An implementation pretty much from scratch, with inspiration from the Rust
+   version, which used the idea of saving some of the ingredients of the
+   compution in an array instead of recomputing them.
+
+   contributed by cvergu
+   slightly modified by bmmeijers
+*/
+
 #include <cmath>
 #include <iostream>
-#include <stdlib.h>
 #include <fstream>
-#include<ctime>
+#include <string>
 
+//reference: https://www.yisu.com/zixun/129174.html
 
 // these values are constant and not allowed to be changed
 const double SOLAR_MASS = 4 * M_PI * M_PI;
@@ -152,6 +162,7 @@ double energy(const body state[BODIES_COUNT]) {
     return energy;
 }
 
+
 body state[] = {
         // Sun
         {
@@ -230,112 +241,35 @@ body state[] = {
         }
 };
 
-struct nbody
-{
-	double x, y, z;
-};
 
 int main(int argc, char **argv) {
-    int n = 20;
-    offset_momentum(state);
-    std::cout << energy(state) << std::endl;
-
-    nbody sun[n];
-	nbody jupiter[n];
-    nbody saturn[n];
-    nbody uranus[n];
-    nbody neptune[n];
-
-    clock_t startTime,endTime;
-    startTime = clock();//计时开始
-
-    for (int i = 0; i < n; ++i) {
-
-        sun[i].x = state[0].position.x;
-        sun[i].y = state[0].position.y;
-        sun[i].z = state[0].position.z;
-
-        jupiter[i].x = state[1].position.x;
-        jupiter[i].y = state[1].position.y;
-        jupiter[i].z = state[1].position.z;
-
-        saturn[i].x = state[2].position.x;
-        saturn[i].y = state[2].position.y;
-        saturn[i].z = state[2].position.z;
-
-        uranus[i].x = state[3].position.x;
-        uranus[i].y = state[3].position.y;
-        uranus[i].z = state[3].position.z;
-
-        neptune[i].x = state[4].position.x;
-        neptune[i].y = state[4].position.y;
-        neptune[i].z = state[4].position.z;
-
-        advance(state, 0.01);
-    }
-    endTime = clock();//计时结束
-    std::cout << std::fixed << "uded:" <<(double)(endTime - startTime) / CLOCKS_PER_SEC << std::endl;
-    // 写入文件
-    std::ofstream outFile;
-    std::string path = "cpp_";
-    path.append(std::to_string(n));
-    outFile.open(path.append(".csv"), std::ios::out | std::ios::trunc);
-    // 写入标题行
-    outFile << "nbody" << ','
-            << "position x" << ','
-            << "position y" << ','
-            << "position z" << std::endl;
-    
-    for (int i = 0; i < n; ++i) {
-        outFile << "sun" << ','
-            << sun[i].x << ','
-            << sun[i].y << ','
-            << sun[i].z << std::endl;
-    }
-    for (int i = 0; i < n; ++i) {
-        outFile << "jupiter" << ','
-            << jupiter[i].x << ','
-            << jupiter[i].y << ','
-            << jupiter[i].z << std::endl;
-    }
-    for (int i = 0; i < n; ++i) {
-        outFile << "saturn" << ','
-            << saturn[i].x << ','
-            << saturn[i].y << ','
-            << saturn[i].z << std::endl;
-    }
-    for (int i = 0; i < n; ++i) {
-        outFile << "uranus" << ','
-            << uranus[i].x << ','
-            << uranus[i].y << ','
-            << uranus[i].z << std::endl;
-    }
-    for (int i = 0; i < n; ++i) {
-        outFile << "neptune" << ','
-            << neptune[i].x << ','
-            << neptune[i].y << ','
-            << neptune[i].z << std::endl;
+    if (argc != 4) {
+        std::cout << "This is " << argv[0]  << std::endl;
+        std::cout << "Call this program with two arguments" << std::endl;
+        std::cout << "(an integer as the number of iterations for the n-body simulation and an string as output filename)." << std::endl;
+        return EXIT_FAILURE;
+    } else {
+        const unsigned int  n = atoi(argv[1]);
+        const std::string filename = argv[2];
+        const unsigned int  out = atoi(argv[3]);
+        offset_momentum(state);
+        std::cout << energy(state) << std::endl;
+        if(out == 1){
+            std::ofstream outfile;
+            outfile.open(filename,std::ios::app);
+            outfile <<"step;name of the body;position x;position y;position z"<<std::endl;
+            for (int i = 0; i < n; ++i) {
+                advance(state, 0.01);
+                for (int j = 0; j < 5; ++j){
+                    outfile <<i<<";"<<state[j].name<<";"<<state[j].position.x<<";"<<state[j].position.y<<";"<<state[j].position.z<<std::endl;
+                }
+            }
+            outfile.close();}
+        else{
+            for (int i = 0; i < n; ++i) {
+                advance(state, 0.01);}
+        }
+            std::cout << energy(state) << std::endl;}
+        return EXIT_SUCCESS;
     }
 
-    std::cout << energy(state) << std::endl;
-    return EXIT_SUCCESS;
-}
-
-
-// int main(int argc, char **argv) {
-//     if (argc != 2) {
-//         std::cout << "This is " << argv[0] << std::endl;
-//         std::cout << "Call this program with an integer as program argument" << std::endl;
-//         std::cout << "(to set the number of iterations for the n-body simulation)." << std::endl;
-//         return EXIT_FAILURE;
-//     } else {
-//         const unsigned int n = atoi(argv[1]);
-//         offset_momentum(state);
-//         std::cout << energy(state) << std::endl;
-//         for (int i = 0; i < n; ++i) {
-//             advance(state, 0.01);
-//         }
-//         std::cout << energy(state) << std::endl;
-//         return EXIT_SUCCESS;
-//     }
-// }
