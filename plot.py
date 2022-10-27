@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 from math import log10
 
 
-#bar chart https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
+#Reference: bar chart https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 labels = ['5000', '500000', '5000000', '50000000']
 python_running_time = []
 debug_running_time = []
 release_running_time = []
 
-with open(r'C:\Users\30662\Desktop\time.csv','r') as f:
+with open('time.csv','r') as f:
     lines=f.readlines()
 
 for i in range(4):
@@ -39,4 +39,4 @@ ax.bar_label(rects3, fmt='%.2f',padding=3,fontsize=7.5)
 
 fig.tight_layout()
 
-plt.savefig(r'C:\Users\30662\Desktop\plot.png',dpi=300)
+plt.savefig('plot.png',dpi=300)
