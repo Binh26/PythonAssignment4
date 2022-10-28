@@ -132,11 +132,11 @@ def main(n, filename, out, ref="sun"):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) >= 4:
+    if len(sys.argv) == 4:
         main(int(sys.argv[1]), str(sys.argv[2]), int(sys.argv[3]))
         sys.exit(0)
     else:
         print(f"This is {sys.argv[0]}")
-        print("Call this program with two arguments")
-        print("(an integer as the number of iterations for the n-body simulation and an string as output filename).")
+        print("Call this program with three arguments")
+        print("(an integer as the number of iterations for the n-body simulation, an string as output filename, and an integer(1/0) to decide whether writing the output file or not).")
         sys.exit(1)
