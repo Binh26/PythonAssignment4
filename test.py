@@ -10,7 +10,7 @@ out = 0 # 0: do not output the file; 1: output the file
 with open('time.csv', 'a') as f:
     f.write('program_type,stimulation_time,running_time(ms)\n')
 
-for i in range(1):
+for i in range(4):
     print('stimulation times: {}'.format(iterations_list[i]))
     begin_python = perf_counter()
     os.system('nbody.py {} {} {}'.format(iterations_list[i],python_filename_list[i],out))
