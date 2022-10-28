@@ -245,8 +245,8 @@ body state[] = {
 int main(int argc, char **argv) {
     if (argc != 4) {
         std::cout << "This is " << argv[0]  << std::endl;
-        std::cout << "Call this program with two arguments" << std::endl;
-        std::cout << "(an integer as the number of iterations for the n-body simulation and an string as output filename)." << std::endl;
+        std::cout << "Call this program with three arguments" << std::endl;
+        std::cout << "(an integer as the number of iterations for the n-body simulation and an string as output filename, and an integer(1/0) to decide whether writing the output file or not))." << std::endl;
         return EXIT_FAILURE;
     } else {
         const unsigned int  n = atoi(argv[1]);
