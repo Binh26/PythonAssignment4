@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import log10
 
-
-#Reference: bar chart https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
+#Create a bar chart
+#Reference: https://matplotlib.org/stable/gallery/lines_bars_and_markers/barchart.html#sphx-glr-gallery-lines-bars-and-markers-barchart-py
 labels = ['5000', '500000', '5000000', '50000000']
 python_running_time = []
 debug_running_time = []
@@ -12,9 +12,10 @@ release_running_time = []
 
 with open('time.csv','r') as f:
     lines=f.readlines()
-
+    
+#use log10 to avoid extremely small or large numbers in the same plot for better visualization
 for i in range(4):
-    python_running_time.append(log10(float(lines[i * 3 + 1].split(',')[2])))
+    python_running_time.append(log10(float(lines[i * 3 + 1].split(',')[2]))) 
     debug_running_time.append(log10(float(lines[i * 3 + 2].split(',')[2])))
     release_running_time.append(log10(float(lines[i * 3 + 3].split(',')[2])))
 
@@ -39,4 +40,4 @@ ax.bar_label(rects3, fmt='%.2f',padding=3,fontsize=7.5)
 
 fig.tight_layout()
 
-plt.savefig('plot.png',dpi=300)
+plt.savefig('plot.png',dpi=300) 
